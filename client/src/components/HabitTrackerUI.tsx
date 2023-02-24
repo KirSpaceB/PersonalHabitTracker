@@ -10,23 +10,36 @@ type Todo = {
 const HabitTrackerUI = () => {
 
   const [input, setInput] = useState<string>('');
-  const [todos, setTodos] = useState<Todo[]>([]);
+  // We can map habits because it is an array of objects
+  const [habits, setHabits] = useState<Todo[]>([]);
+
 
   // Submit Logic: When button is clicked the text inside the input is mapped into a list
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setTodos([...todos,{text: input, count: 1},])
-    console.log('HandleSubmitCall')
+    setHabits([...habits,{text: input, count: 1},])
     setInput(" ")
   }
 
   // Logic for adding 
   const handleIncrement = (index: number) => {
-    const updatedTodos = [...todos];
-    updatedTodos[index].count++;
-    setTodos(updatedTodos);
+    const updatedHabits = [...habits];
+    updatedHabits[index].count++;
+    setHabits(updatedHabits);
   };
 
+  const habitsData = habits.map(habit => ({text:habit.text, count:habit.count}))
+  console.log(habitsData)
+
+  // Convert te two to objects because JSON rules
+  fetch("http://127.0.0.1:8001/database", {
+    method: "POST",
+    headers: {
+      "Content-type": "application/json", // Tell the client server that thi
+      "Accept": "application/json"
+    },
+    body: JSON.stringify(habitsData)
+  })
 
   return(
     <>
@@ -48,12 +61,11 @@ const HabitTrackerUI = () => {
 
       <ul>
 
-      {todos.map((todo,index) => (
+      {habits.map((habit,index) => (
         <li key={index}>
-        {todo.text} {todo.count}
-        
-        <button onClick={() => handleIncrement(index)}>Increment</button>
-        
+          {/* Here we are mapping the objects text and count property to their own list */}
+        {habit.text} {habit.count}
+        <button onClick={() => handleIncrement(index)}>Increment</button> 
         </li>
       ))}
     </ul>
