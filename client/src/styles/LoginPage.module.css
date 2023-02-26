@@ -45,3 +45,9 @@
 .LoginPage_btnContainer {
   padding-top: 2em;
 }
+
+.LoginPage_signUpBtn {
+  margin-top: 1em;
+  width: 10em;
+  height: 3em;
+}

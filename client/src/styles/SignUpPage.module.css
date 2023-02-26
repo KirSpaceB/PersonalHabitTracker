@@ -1,0 +1,19 @@
+.form_pageBody {
+  min-width: 100vw;
+  min-height: 100vh;
+  display: grid;
+  justify-content: center;
+  align-items: center;
+}
+.form_container {
+  display: grid;
+  justify-content: center;
+  align-items: center;
+  width: 30em;
+  height: 30em;
+  background-color: rgb(245, 245, 245);
+  border: 1px solid black;
+}
+.form > * {
+  margin-top: 1em; 
+}

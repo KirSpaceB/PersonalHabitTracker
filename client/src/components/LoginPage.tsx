@@ -1,12 +1,13 @@
 import styles from '../styles/LoginPage.module.css';
-import { useGoogleLogin } from '@react-oauth/google';
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const LoginPage = () => {
-  const navigateToHome = useNavigate()
-
+  const navigateHook = useNavigate()
+  const handleClick = () => {
+    navigateHook('SignUp')
+  }
   
+
   return (
     <>
         <div className={styles.LoginPage_container}>
@@ -15,20 +16,22 @@ const LoginPage = () => {
             <h1 className={styles.LoginPage_title}>Habit Tracker</h1>
             
             <div className={styles.LoginPage_userEmailContainer}>
-              <input></input>
+              <input placeholder='Username'></input>
             </div>
 
             <div className={styles.LoginPage_userPasswordContainer}>
-              <input></input>
+              <input placeholder='Password'></input>
             </div>
 
             <div className={styles.LoginPage_btnContainer}>
               <button className={styles.LoginPage_loginBtn}>Login</button>
             </div>
+            <div className={styles.LoginPage_signUp}>
+              <button onClick={handleClick} className={styles.LoginPage_signUpBtn}>Sign Up</button>
+            </div>
 
           </div>
         </div>
-      
     </>
   )
 }
