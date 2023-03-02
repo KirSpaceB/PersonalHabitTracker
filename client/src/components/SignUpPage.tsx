@@ -2,7 +2,7 @@
 // We create a state for formValues, the state is initially an empty object of all the form values, then we change the values by destructuring the object to the event.value(input in the field). This then updates the formValues as the input updates. However we do not want that so we create the function validateForm, we do this in order to stop updating the formValues state variable until validateForm returns a boolean true
 
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import styles from '../styles/SignUpPage.module.css'
 import FormInput from './FormInput'
 
@@ -58,6 +58,25 @@ const SignUpPage:React.FC = () => {
     event.preventDefault();
     if(validateForm()) {
       console.log(formValues)
+      //Gives our data to the backend
+      fetch("http://127.0.0.1:5000/user-signup", {
+          method: "POST",
+          headers: {
+            "Content-type": "application/json",
+            "Accept": "application/json",
+            "Access-Control-Allow-Origin": "*",
+          },
+          body: JSON.stringify(formValues)
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          return response.json();
+        })
+        .catch(error => {
+          console.error("Error:", error);
+        });
     }
   }
   
@@ -67,8 +86,6 @@ const SignUpPage:React.FC = () => {
     console.log(name)
     console.log(value)
   }
-
-
 
   return(
     <>
