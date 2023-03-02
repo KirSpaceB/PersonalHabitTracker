@@ -35,7 +35,7 @@ const HabitTrackerUI = () => {
   fetch("http://127.0.0.1:8001/database", {
     method: "POST",
     headers: {
-      "Content-type": "application/json", // Tell the client server that thi
+      "Content-type": "application/json", // Tell the client server that this is a json file
       "Accept": "application/json"
     },
     body: JSON.stringify(habitsData)
