@@ -10,7 +10,6 @@ import FormInput from './FormInput'
 type FormValues = {
   userName:string;
   password:string;
-  email:string;
 };
 
 const SignUpPage:React.FC = () => {
@@ -19,18 +18,16 @@ const SignUpPage:React.FC = () => {
   const [formValues, setFormValues] = useState<FormValues>({ //Forms Values is the object
     userName:'',
     password:'',
-    email:'',
   });
   // Initialize the formErrors state with an object containing empty strings
   const [formErrors, setFormErrors] = useState<FormValues>({
     userName:'',
     password:'',
-    email:'',
   })
 
   const validateForm = () => {
     let isValid = true;
-    const errors = {userName: '', password:'', email: ''};
+    const errors = {userName: '', password:''};
     //Form validation
     if(!formValues.userName) {
       errors.userName = 'Please Enter name';
@@ -39,14 +36,6 @@ const SignUpPage:React.FC = () => {
 
     if(!formValues.password) {
       errors.password = 'Password not valid'
-      isValid = false
-    }
-    //Email validation
-    if(!formValues.email) {
-      errors.email = 'Please Enter email';
-      isValid = false
-    } else if(!/\S+@\S+\.\S+/.test(formValues.email)) {
-      errors.email = 'Please enter valid email';
       isValid = false
     }
 
@@ -117,17 +106,6 @@ const SignUpPage:React.FC = () => {
             value={formValues.password}
             onChange={handleChange}
             error={formErrors.password}
-            />
-
-            <br/>
-
-            <FormInput
-            type={'text'}
-            placeholder='Email'
-            name='email'
-            value={formValues.email}
-            onChange={handleChange}
-            error={formErrors.email}
             />
 
             <br/>

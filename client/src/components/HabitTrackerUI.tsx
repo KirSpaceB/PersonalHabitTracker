@@ -15,10 +15,8 @@ const HabitTrackerUI = () => {
 
 
   // Submit Logic: When button is clicked the text inside the input is mapped into a list
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
     setHabits([...habits,{text: input, count: 1},])
-    setInput(" ")
   }
 
   // Logic for adding 
@@ -28,22 +26,22 @@ const HabitTrackerUI = () => {
     setHabits(updatedHabits);
   };
 
-  const habitsData = habits.map(habit => ({text:habit.text, count:habit.count}))
-  console.log(habitsData)
+  console.log(habits)
 
   // Convert te two to objects because JSON rules
-  fetch("http://127.0.0.1:8001/database", {
+  fetch("http://127.0.0.1:5000/database", {
     method: "POST",
     headers: {
       "Content-type": "application/json", // Tell the client server that this is a json file
-      "Accept": "application/json"
+      "Accept": "application/json",
+      "Access-Control-Allow-Origin": "*",
     },
-    body: JSON.stringify(habitsData)
+    body: JSON.stringify(habits)
   })
 
   return(
     <>
-      <form className={styles.todo_form} onSubmit={handleSubmit}>
+      <form className={styles.todo_form}>
 
         <input 
         type="text"
@@ -55,7 +53,7 @@ const HabitTrackerUI = () => {
         >
         </input>
 
-        <button className={styles.todo_button}>Add Habit</button>
+        <button type="button" onClick={handleSubmit} className={styles.todo_button}>Add Habit</button>
 
       </form>
 

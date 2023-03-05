@@ -16,7 +16,7 @@ def connect():
         user="root",
         password="ManOfSorrows1!",
         host="localhost",
-        database="testdb" #Species what tb to use when creating tables etc.
+        database="habit_tracker_users" 
     )
     
     # Cursor allows us to communitcate the backend with the DB
@@ -32,7 +32,7 @@ def connect():
         count = data[0]['count'] #passing undefined to sql query causing error
         
 
-        sql = "INSERT INTO users_habit (user_habit,user_count) VALUES (%s, %s);"
+        sql = "INSERT INTO users_habits (user_habit,habit_count) VALUES (%s, %s);"
         val=(text,count)
         mycursor.execute(sql,val)
         DB.commit()

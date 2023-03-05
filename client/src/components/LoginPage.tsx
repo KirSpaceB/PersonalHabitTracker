@@ -26,12 +26,13 @@ const LoginPage = () => {
       },
       body: JSON.stringify(loginInfo)
     }).then((response) => {
-      console.log(response)
       // Always have to return the response, and we always have to jsonify it
       return response.json()
     }).then((data) => {
+      console.log(data)
       // since js returns an object we always have to treat the reponse like an object?
       if(data.message === 'success') {
+        sessionStorage.setItem('token', data.token)
         navigateHook('HabitTracker/Home')
       } else {
         alert('wrong username or password dumbass')
