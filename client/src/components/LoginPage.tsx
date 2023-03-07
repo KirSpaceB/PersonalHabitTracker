@@ -1,5 +1,5 @@
 import styles from '../styles/LoginPage.module.css';
-import { Form, useNavigate } from "react-router-dom";
+import { Form, useNavigate, redirect } from "react-router-dom";
 import FormInput from './FormInput';
 import { useState } from 'react';
 
@@ -32,16 +32,19 @@ const LoginPage = () => {
       console.log(data)
       // since js returns an object we always have to treat the reponse like an object?
       if(data.message === 'success') {
+        // This gives user a token, with that token the data on the user is saved such as routes, and user info
         sessionStorage.setItem('token', data.token)
+        console.log(sessionStorage.getItem('token'))
         navigateHook('HabitTracker/Home')
       } else {
-        alert('wrong username or password dumbass')
+        alert('wrong username or password')
       }
     })
   }
 
   //Review
   const handleUserInput = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    // Object destructuring
     const {name,value} = event.target
     setLoginInfo({...loginInfo, [name]:value});
   }
@@ -58,7 +61,6 @@ const LoginPage = () => {
               <FormInput type="password" name="password" value={loginInfo.password} onChange={handleUserInput} placeholder='password'/>
               <input type='submit'></input>
             </form>
-
 
             <div className={styles.LoginPage_signUp}>
               <button onClick={handleSignUpNavigation} className={styles.LoginPage_signUpBtn}>Sign Up</button>

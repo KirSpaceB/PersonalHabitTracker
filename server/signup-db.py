@@ -2,10 +2,13 @@ from flask import Flask, request,jsonify,redirect, url_for,render_template, sess
 import random
 from flask_cors import CORS
 import mysql.connector
+import jwt
+import os
 
 app = Flask(__name__)
 CORS(app)
-app.secret_key = 'nutsack'
+app.secret_key = 'bakai'
+secret_key = os.environ.get('SECRET_KEY') or 'hard-to-guess-string'
 
 @app.route('/user-signup', methods=['POST'])
 def signup_db():
@@ -62,10 +65,12 @@ def authenticate_user():
     #This use to break because an else statement was inside it, so after one iteration different user(one isn't in row one of the db) then it would automatically go to the else statement.
     for row in results:
         if row[1] == loginInfo['userName'] and row[2] == loginInfo['password']:
-            token = random.randint(0,1000)
+            payload = {'user_id': row[0]}
+            token = jwt.encode(payload,secret_key,algorithm='HS256')
             session['token'] = token
             print('user is in')
             return jsonify({'message':'success', 'token': token})
+    return jsonify({'message':'fail'})
 
     
 @app.route("/database", methods=['POST'])

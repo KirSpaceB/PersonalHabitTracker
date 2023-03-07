@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useEffect } from "react";
 import styles from '../styles/HabitTrackerUI.module.css';
 import {useState} from "react"
-
+import jwt_decode from "jwt-decode"
 type Todo = {
   text: string,
   count: number,
@@ -13,10 +13,13 @@ const HabitTrackerUI = () => {
   // We can map habits because it is an array of objects
   const [habits, setHabits] = useState<Todo[]>([]);
 
-
   // Submit Logic: When button is clicked the text inside the input is mapped into a list
   const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
-    setHabits([...habits,{text: input, count: 1},])
+    // Figure out how to do a get request based on the users id to match user to habit data :p
+    const tokens = sessionStorage.getItem('token');
+    const decodedToken = jwt_decode(tokens)
+    const userId = decodedToken.sub;
+    setHabits([...habits,{text: input, count: 1, userId:userId}])
   }
 
   // Logic for adding 
@@ -37,6 +40,13 @@ const HabitTrackerUI = () => {
       "Access-Control-Allow-Origin": "*",
     },
     body: JSON.stringify(habits)
+  })
+
+  useEffect(() => {
+    const token = sessionStorage.getItem('token')
+    if(token) {
+      fetch
+    }
   })
 
   return(
