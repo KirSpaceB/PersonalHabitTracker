@@ -6,12 +6,13 @@ import jwt
 import os
 
 app = Flask(__name__)
-CORS(app)
+cors = CORS(app, resources={r"/*": {"origins": "*"}}) # This allows CORS to accept all websites
 app.secret_key = 'bakai'
 secret_key = os.environ.get('SECRET_KEY') or 'hard-to-guess-string'
 
 @app.route('/user-signup', methods=['POST'])
 def signup_db():
+    print('Signup_db is working')
     #data from Signup page turn to json object
     data=request.get_json()
     print(data)
@@ -43,6 +44,7 @@ def signup_db():
 # We have to host the backend first before lauching the frontend
 @app.route("/user-auth", methods=["POST"])
 def authenticate_user():
+    print('User-auth is working')
 
     DB = mysql.connector.connect(
         user="root",
@@ -63,6 +65,16 @@ def authenticate_user():
     results = sqlCursor.fetchall()
 
     #This use to break because an else statement was inside it, so after one iteration different user(one isn't in row one of the db) then it would automatically go to the else statement.
+    #Sessions are stored on the backend
+    #Session data is stored in the backend but the frontend 
+    #Frontend stores it as a cookie(its a text file stored in the browser)
+    #Hacker can find cookie section in browser
+    #Think of a session as a new tab(page session)
+    #Session storage is stored for a specific session
+    #Backend takes token figures which token user belongs to, then makes sql query based on user ID
+    #Make HTTP request with the token so,
+    #The token is not stored in a mySQL DB, its stored on the browser db, we use a HTTP header to 
+    #Google has copies of everyones ip address
     for row in results:
         if row[1] == loginInfo['userName'] and row[2] == loginInfo['password']:
             payload = {'user_id': row[0]}
@@ -73,8 +85,9 @@ def authenticate_user():
     return jsonify({'message':'fail'})
 
     
-@app.route("/database", methods=['POST'])
+@app.route("/database", methods=["POST"])
 def connect():
+    print('Database is working')
     #Review multi threading problem
     #Ecapsulate this variable
     DBs = mysql.connector.connect(
@@ -95,19 +108,42 @@ def connect():
     try:
         text = data[0]['text']#From React
         count = data[0]['count'] #passing undefined to sql query causing error
-
-        sql = "INSERT INTO users_habits (user_habit,habit_count) VALUES (%s, %s);"
+        userIdCount = 0#Basically a bootleg version of AUTO_INCREMENT
+        # We have to figure out how to auto_increment our user_id along with foreign key
+        sql = "INSERT INTO users_habits (user_id,user_habit,habit_count) VALUES (%s,%s, %s);"
 
         val = (text,count)
 
-        mycursor.execute(sql,val) # Now executes the problem was with the sql variable, apparently it was wrong
-
-        print(mycursor.execute(sql,val))
+        mycursor.execute(userIdCount,sql,val) # Now executes the problem was with the sql variable, apparently it was wrong
+        userIdCount+=1
+        #This is not getting read
+        print(mycursor.execute(userIdCount,sql,val))
 
         DBs.commit()
         return jsonify({'Message': 'Sent data successfully'}), 200
     except: 
         return 'Bad Request', 500
+    
+@app.route('/sendUserData', methods=['GET'])
+def sendUserData():
+    DB = mysql.connector.connect(
+        user="root",
+        password="ManOfSorrows1!",
+        host="localhost",
+        database="habit_tracker_users" 
+    )
+    mySQLCursor = DB.cursor()
+    # We first select a table, then select the rows from that table that we want to mutate. After that we join the rows to the users table by the two matching primary keys on the table
+    getUserIdQuery = "SELECT user_habit, habit_count FROM users_habits INNER JOIN users ON users_habits.user_id = users.user_id"
+
+    mySQLCursor.execute(getUserIdQuery)
+
+    results = mySQLCursor.fetchall()
+
+    print('This is working and the line of code below this are the results')
+    print(results)
+    
+    return results
 
 if __name__ == "__main__":
     app.run(debug=True)
