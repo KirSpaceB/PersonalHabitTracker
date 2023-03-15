@@ -4,6 +4,7 @@
 import { useEffect, useState } from 'react'
 import styles from '../styles/SignUpPage.module.css'
 import FormInput from './FormInput'
+import { useNavigate } from 'react-router-dom';
 
 // Define an interface for the form values
 type FormValues = {
@@ -12,6 +13,8 @@ type FormValues = {
 };
 
 const SignUpPage:React.FC = () => {
+  //Navigate to home page after signup button has been pressed
+  const useNavigateHook = useNavigate()
   
   // Initialize the formValues state with an object containing empty strings
   const [formValues, setFormValues] = useState<FormValues>({ //Forms Values is the object
@@ -59,6 +62,8 @@ const SignUpPage:React.FC = () => {
         .then(response => {
           if (!response.ok) {
             throw new Error("Network response was not ok");
+          } else {
+            useNavigateHook('/')
           }
           return response.json();
         })

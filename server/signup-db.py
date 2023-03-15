@@ -63,25 +63,25 @@ def authenticate_user():
     
     #Fetches all the selected users in the DB
     results = sqlCursor.fetchall()
+    print(results)
 
-    #This use to break because an else statement was inside it, so after one iteration different user(one isn't in row one of the db) then it would automatically go to the else statement.
-    #Sessions are stored on the backend
-    #Session data is stored in the backend but the frontend 
-    #Frontend stores it as a cookie(its a text file stored in the browser)
-    #Hacker can find cookie section in browser
-    #Think of a session as a new tab(page session)
-    #Session storage is stored for a specific session
-    #Backend takes token figures which token user belongs to, then makes sql query based on user ID
-    #Make HTTP request with the token so,
-    #The token is not stored in a mySQL DB, its stored on the browser db, we use a HTTP header to 
-    #Google has copies of everyones ip address
+
     for row in results:
         if row[1] == loginInfo['userName'] and row[2] == loginInfo['password']:
-            payload = {'user_id': row[0]}
-            token = jwt.encode(payload,secret_key,algorithm='HS256')
-            session['token'] = token
-            print('user is in')
-            return jsonify({'message':'success', 'token': token})
+            session['logged_in'] = True
+            # This session allows us to attach a session key to user_id from the database and since that user_id is a foreign key to users_habits we can then get the many to one relationship also know as the habits for users
+            session['user_id'] = row[0] # were setting a key to a user_id in the db
+            #Query to check for users_id
+            getUsersIdFromHabitTracker = ("SELECT user_id FROM users_habits")
+            sqlCursor.execute(getUsersIdFromHabitTracker)
+            #fetches all remaining rows from a query
+            users_habit_user_id = sqlCursor.fetchall()
+
+            print("users habits", users_habit_user_id)
+            for (users,) in users_habit_user_id:
+                if session['user_id'] == users:
+                    print('We have to create another query to get the users stuff')
+            return jsonify({'message':'success'})
     return jsonify({'message':'fail'})
 
     
@@ -108,16 +108,16 @@ def connect():
     try:
         text = data[0]['text']#From React
         count = data[0]['count'] #passing undefined to sql query causing error
-        userIdCount = 0#Basically a bootleg version of AUTO_INCREMENT
-        # We have to figure out how to auto_increment our user_id along with foreign key
-        sql = "INSERT INTO users_habits (user_id,user_habit,habit_count) VALUES (%s,%s, %s);"
+        # userIdCount = 0#Basically a bootleg version of AUTO_INCREMENT
+        # # We have to figure out how to auto_increment our user_id along with foreign key
+        sql = "INSERT INTO users_habits (user_habit,habit_count) VALUES (%s, %s);"
 
         val = (text,count)
 
-        mycursor.execute(userIdCount,sql,val) # Now executes the problem was with the sql variable, apparently it was wrong
-        userIdCount+=1
+        mycursor.execute(sql,val) # Now executes the problem was with the sql variable, apparently it was wrong
+        # userIdCount+=1
         #This is not getting read
-        print(mycursor.execute(userIdCount,sql,val))
+        print(mycursor.execute(sql,val))
 
         DBs.commit()
         return jsonify({'Message': 'Sent data successfully'}), 200
@@ -134,14 +134,19 @@ def sendUserData():
     )
     mySQLCursor = DB.cursor()
     # We first select a table, then select the rows from that table that we want to mutate. After that we join the rows to the users table by the two matching primary keys on the table
-    getUserIdQuery = "SELECT user_habit, habit_count FROM users_habits INNER JOIN users ON users_habits.user_id = users.user_id"
-
+    getUserIdQuery = "SELECT * FROM users_habits INNER JOIN users ON users_habits.user_id = users.user_id"
+    print('test')
+    # We need to match user_id to users_habits
+    # It should only fetch user_id 4
+    # Only fetch if user_id from users_habits matches user_id from users.
     mySQLCursor.execute(getUserIdQuery)
-
+    
     results = mySQLCursor.fetchall()
 
     print('This is working and the line of code below this are the results')
-    print(results)
+    # print(results)
+    # for users in results:
+    #     # print(users)
     
     return results
 

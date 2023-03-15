@@ -20,14 +20,18 @@ const DisplayHabits = () => {
       return res.json()
     }).then((data) => {
       console.log(data)
-      setDisplayHabits([data[0], data[1]])
+      // data is a an array of arrays
+      // How can I get data to be dynamic and also match with users so user_id = 1 would match with user_habit_id = 1
+      // This needs data in order to render on the page
+      setDisplayHabits([data[0]])
     })
+    // We need to create a conditional that matches users
   },[])
   console.log(displayHabits)
   return (
     <div>
       {displayHabits.map((habit, count) => (
-        // Figure out why this isn't rendering
+        // 
         <div key={count}> {habit[0]} {habit[1]}</div>
       ))}
     </div>
