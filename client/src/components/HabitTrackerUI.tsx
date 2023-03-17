@@ -35,6 +35,10 @@ const HabitTrackerUI = () => {
   // This gets a INTERNAL SERVER ERROR 500 but it works idk why
   useEffect(() => {
     console.log('test')
+    const payload = {
+      habits:habits
+    }
+    console.log("This is suppose to be an empty JSON", payload)
     fetch("http://127.0.0.1:5000/database", {
       method: "POST",
       headers: {
@@ -42,7 +46,7 @@ const HabitTrackerUI = () => {
         "Accept": "application/json",
         "Access-Control-Allow-Origin": "*",
       },
-      body: JSON.stringify(habits)
+      body: JSON.stringify(payload)
     })
   }, [habits])
   

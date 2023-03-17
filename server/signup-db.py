@@ -1,4 +1,4 @@
-from flask import Flask, request,jsonify,redirect, url_for,render_template, session
+from flask import Flask, request,jsonify,session
 import random
 from flask_cors import CORS
 import mysql.connector
@@ -6,10 +6,9 @@ import jwt
 import os
 
 app = Flask(__name__)
-cors = CORS(app, resources={r"/*": {"origins": "*"}}) # This allows CORS to accept all websites
+cors = CORS(app, resources={r"/*": {"origins": "http://localhost:5173"}}, supports_credentials=True) # This allows CORS to accept all websites
 app.secret_key = 'bakai'
 secret_key = os.environ.get('SECRET_KEY') or 'hard-to-guess-string'
-
 @app.route('/user-signup', methods=['POST'])
 def signup_db():
     print('Signup_db is working')
@@ -42,35 +41,64 @@ def signup_db():
     return {"message": "Successfully Registered"}
 # You cannot use double quotes in your string literals only single quotes ''
 # We have to host the backend first before lauching the frontend
-@app.route("/user-auth", methods=["POST"])
+@app.route("/user-auth", methods=["POST", "GET"])
 def authenticate_user():
-    print('User-auth is working')
 
-    DB = mysql.connector.connect(
-        user="root",
-        password="ManOfSorrows1!",
-        host="localhost",
-        database="habit_tracker_users" #Species what tb to use when creating tables etc.
-    )
-    loginInfo = request.get_json()
-    print(loginInfo)
+    print('User-auth is working')
+    try:
+        DB = mysql.connector.connect(
+            user="root",
+            password="ManOfSorrows1!",
+            host="localhost",
+            database="habit_tracker_users" #Species what tb to use when creating tables etc.
+        )
+    except:
+        print('sql error')
+
 
     sqlCursor = DB.cursor()
     #SQL command to execute
     checkForUser = ("SELECT * FROM users")
     #Execute query
     sqlCursor.execute(checkForUser)
+    #generate token on server
+    #ui saves token
     
+    #Make initial authorization request, the server responds with the bearer token, header has authorization bearer, sever get header and matches with session, then gets correct session, therefore matching user data.
+    #Difference between bearer and cookie is, instead of sent by cookie, it sent by the http header.
+
     #Fetches all the selected users in the DB
     results = sqlCursor.fetchall()
-    print(results)
 
+    if request.method == "POST":
+        
+        try:
+            loginInfo = request.get_json() # GET REQUEST DONT HAVE A BODY AND GET_JSON GETS FROM THE BODY AKA ANY REQUEST THAT HAS A BODY(POST)
+            print("request.getjson", loginInfo)
+        except:
+            print('invalid request')
+            return ({'message':'return statement in try-catch'}), 400
+        
+        for row in results:
+            print(session)
+            if row[1] == loginInfo['userName'] and row[2] == loginInfo['password']:
+                #row[0] is the user_id in the users table
+                # This session allows us to attach a session key to user_id from the database and since that user_id is a foreign key to users_habits we can then get the many to one relationship also know as the habits for users
+                session['loged_in'] = True
+                session['user_id'] = row[0]
+                value = request.cookies.get('session')
+                print("request cookie", value)
+                print('This is the users session_id', session['user_id'])#This changes dynamically
+                print(session)
 
-    for row in results:
-        if row[1] == loginInfo['userName'] and row[2] == loginInfo['password']:
-            session['logged_in'] = True
-            # This session allows us to attach a session key to user_id from the database and since that user_id is a foreign key to users_habits we can then get the many to one relationship also know as the habits for users
-            session['user_id'] = row[0] # were setting a key to a user_id in the db
+                return({'message':'success'})
+        return jsonify({'message':'POST request conditional was not hit'})
+    #Flask automatically gives cookie for each new session because they are two seperate requests it will lead to different
+    if request.method == "GET":
+        print('test')
+        print(session)
+        if 'user_id' in session: # This does not work because session is empty and does not read user id from the previous statement
+            print('Inside Request.method=GET')
             #Query to check for users_id
             getUsersIdFromHabitTracker = ("SELECT user_id FROM users_habits")
             sqlCursor.execute(getUsersIdFromHabitTracker)
@@ -78,13 +106,21 @@ def authenticate_user():
             users_habit_user_id = sqlCursor.fetchall()
 
             print("users habits", users_habit_user_id)
+            #This for loop matches the user session_id to the actual user in the database
             for (users,) in users_habit_user_id:
                 if session['user_id'] == users:
                     print('We have to create another query to get the users stuff')
-            return jsonify({'message':'success'})
-    return jsonify({'message':'fail'})
+                    print(users_habit_user_id)
+                    #We want to add a query here that renders the html and stuff so instead of the endpoint send user data it returns this
+                    return jsonify({'message':'user GET REQUEST'})
+        return jsonify({'message':'GET request conditional was not hit'})
+                
+            
+    print('this is after the POST request', session['user_id'])
 
-    
+    # The point of this is to match the user_session_id with user_habits
+    return jsonify({'message':'could not reach get or post request'})
+
 @app.route("/database", methods=["POST"])
 def connect():
     print('Database is working')
@@ -115,8 +151,7 @@ def connect():
         val = (text,count)
 
         mycursor.execute(sql,val) # Now executes the problem was with the sql variable, apparently it was wrong
-        # userIdCount+=1
-        #This is not getting read
+
         print(mycursor.execute(sql,val))
 
         DBs.commit()

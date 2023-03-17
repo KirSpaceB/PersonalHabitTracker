@@ -2,6 +2,10 @@ import styles from '../styles/LoginPage.module.css';
 import { Form, useNavigate, redirect } from "react-router-dom";
 import FormInput from './FormInput';
 import { useState } from 'react';
+import fetchCookie from 'fetch-cookie';
+
+
+const fetchCookieDecorator = fetchCookie(fetch)
 
 const LoginPage = () => {
   const navigateHook = useNavigate()
@@ -17,15 +21,18 @@ const LoginPage = () => {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     console.log(loginInfo)
-    fetch("http://127.0.0.1:5000/user-auth", {
+    fetchCookieDecorator("http://127.0.0.1:5000/user-auth", {
       method: "POST",
       headers: {
         "Content-type": "application/json",
         "Accept": "application/json",
-        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Origin": "http://localhost:5173",
+        "Access-Control-Allow-Credentials": "http://localhost:5174",
       },
+      credentials:'include',
       body: JSON.stringify(loginInfo)
     }).then((response) => {
+      
       // Always have to return the response, and we always have to jsonify it
       return response.json()
     }).then((data) => {
