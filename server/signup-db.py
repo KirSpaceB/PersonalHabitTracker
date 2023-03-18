@@ -1,9 +1,11 @@
-from flask import Flask, request,jsonify,session
+from flask import Flask, make_response, request,jsonify,session
 import random
 from flask_cors import CORS
 import mysql.connector
 import jwt
+from datetime import datetime, timedelta
 import os
+import json
 
 app = Flask(__name__)
 cors = CORS(app, resources={r"/*": {"origins": "http://localhost:5173"}}, supports_credentials=True) # This allows CORS to accept all websites
@@ -55,7 +57,6 @@ def authenticate_user():
     except:
         print('sql error')
 
-
     sqlCursor = DB.cursor()
     #SQL command to execute
     checkForUser = ("SELECT * FROM users")
@@ -71,7 +72,6 @@ def authenticate_user():
     results = sqlCursor.fetchall()
 
     if request.method == "POST":
-        
         try:
             loginInfo = request.get_json() # GET REQUEST DONT HAVE A BODY AND GET_JSON GETS FROM THE BODY AKA ANY REQUEST THAT HAS A BODY(POST)
             print("request.getjson", loginInfo)
@@ -84,19 +84,23 @@ def authenticate_user():
             if row[1] == loginInfo['userName'] and row[2] == loginInfo['password']:
                 #row[0] is the user_id in the users table
                 # This session allows us to attach a session key to user_id from the database and since that user_id is a foreign key to users_habits we can then get the many to one relationship also know as the habits for users
-                session['loged_in'] = True
-                session['user_id'] = row[0]
-                value = request.cookies.get('session')
-                print("request cookie", value)
-                print('This is the users session_id', session['user_id'])#This changes dynamically
-                print(session)
-
-                return({'message':'success'})
+                user_id_dict = {
+                    'user_id':row[0]
+                }
+                token = jwt.encode(
+                    {'user_id':user_id_dict['user_id']}, 'SECRET_KEY', algorithm='HS256'
+                )
+                return jsonify({'token':token})
+            else:
+                return make_response('Unable to Verify'), 403
         return jsonify({'message':'POST request conditional was not hit'})
     #Flask automatically gives cookie for each new session because they are two seperate requests it will lead to different
     if request.method == "GET":
-        print('test')
-        print(session)
+
+        auth_header = request.headers.get('Authorization').replace('Bearer', '').strip()
+        print(auth_header)
+        print(type(auth_header))
+
         if 'user_id' in session: # This does not work because session is empty and does not read user id from the previous statement
             print('Inside Request.method=GET')
             #Query to check for users_id
@@ -114,10 +118,6 @@ def authenticate_user():
                     #We want to add a query here that renders the html and stuff so instead of the endpoint send user data it returns this
                     return jsonify({'message':'user GET REQUEST'})
         return jsonify({'message':'GET request conditional was not hit'})
-                
-            
-    print('this is after the POST request', session['user_id'])
-
     # The point of this is to match the user_session_id with user_habits
     return jsonify({'message':'could not reach get or post request'})
 

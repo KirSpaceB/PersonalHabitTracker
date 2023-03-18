@@ -34,7 +34,6 @@ const HabitTrackerUI = () => {
   // Convert te two to objects because JSON rules
   // This gets a INTERNAL SERVER ERROR 500 but it works idk why
   useEffect(() => {
-    console.log('test')
     const payload = {
       habits:habits
     }

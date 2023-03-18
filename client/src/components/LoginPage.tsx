@@ -2,12 +2,9 @@ import styles from '../styles/LoginPage.module.css';
 import { Form, useNavigate, redirect } from "react-router-dom";
 import FormInput from './FormInput';
 import { useState } from 'react';
-import fetchCookie from 'fetch-cookie';
-
-
-const fetchCookieDecorator = fetchCookie(fetch)
 
 const LoginPage = () => {
+
   const navigateHook = useNavigate()
   const handleSignUpNavigation = () => {
     navigateHook('SignUp')
@@ -21,7 +18,8 @@ const LoginPage = () => {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     console.log(loginInfo)
-    fetchCookieDecorator("http://127.0.0.1:5000/user-auth", {
+    
+    fetch("http://127.0.0.1:5000/user-auth", {
       method: "POST",
       headers: {
         "Content-type": "application/json",
@@ -32,16 +30,14 @@ const LoginPage = () => {
       credentials:'include',
       body: JSON.stringify(loginInfo)
     }).then((response) => {
-      
       // Always have to return the response, and we always have to jsonify it
       return response.json()
     }).then((data) => {
-      console.log(data)
+      const stringifyData = JSON.stringify(data)
+      console.log(stringifyData)
+      sessionStorage.setItem('token', stringifyData)
       // since js returns an object we always have to treat the reponse like an object?
-      if(data.message === 'success') {
-        // This gives user a token, with that token the data on the user is saved such as routes, and user info
-        sessionStorage.setItem('token', data.token)
-        console.log(sessionStorage.getItem('token'))
+      if(data) {
         navigateHook('HabitTracker/Home')
       } else {
         alert('wrong username or password')

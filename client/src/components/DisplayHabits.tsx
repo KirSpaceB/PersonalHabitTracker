@@ -4,34 +4,31 @@ type displayedHabits = {
   text: string,
   count:number
 }
-const fetchCookieDecorator = fetchCookie(fetch)
+
 // This is a helper component because we could not use two fetch calls in the same component to one backend server
 const DisplayHabits = () => {
   const [displayHabits, setDisplayHabits] = useState<displayedHabits[]>([])
 
+  const token = JSON.parse(sessionStorage.token)
+  console.log(token)
   useEffect(() => {
-    fetchCookieDecorator("http://127.0.0.1:5000/user-auth", {
+    fetch("http://127.0.0.1:5000/user-auth", {
       method:"GET",
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
         'Access-Control-Allow-Origin': 'http://localhost:5173',
-        'Access-Control-Allow-Credentials': 'http://localhost:5174',
+        'Access-Control-Allow-Credentials': 'true',
+        'Authorization':`Bearer ${JSON.stringify(token)}`
       },
       credentials:'include',
     }).then((res) => {
       return res.json()
     }).then((data) => {
-      console.log('inside the 3rd .then() method on the fetch request')
-      console.log(data)
-      console.log(data.message)
-      // data is a an array of arrays
-      // How can I get data to be dynamic and also match with users so user_id = 1 would match with user_habit_id = 1
-      // This needs data in order to render on the page
-      // setDisplayHabits([data[0]])
+      // data is not hit yet
     })
   },[])
-  console.log(displayHabits)
+
   return (
     <div>
       {/* {displayHabits.map((habit, count) => (
