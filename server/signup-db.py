@@ -80,29 +80,29 @@ def authenticate_user():
             return ({'message':'return statement in try-catch'}), 400
         
         for row in results:
-            print(session)
+            #Rn this forloop only hits once
+            print(row)
             if row[1] == loginInfo['userName'] and row[2] == loginInfo['password']:
                 #row[0] is the user_id in the users table
                 # This session allows us to attach a session key to user_id from the database and since that user_id is a foreign key to users_habits we can then get the many to one relationship also know as the habits for users
-                user_id_dict = {
-                    'user_id':row[0]
-                }
+                user_id = row[0]
                 token = jwt.encode(
-                    {'user_id':user_id_dict['user_id']}, 'SECRET_KEY', algorithm='HS256'
+                    {'user_id':user_id}, 'SECRET_KEY', algorithm='HS256'
                 )
                 return jsonify({'token':token})
-            else:
-                return make_response('Unable to Verify'), 403
         return jsonify({'message':'POST request conditional was not hit'})
     #Flask automatically gives cookie for each new session because they are two seperate requests it will lead to different
     if request.method == "GET":
 
-        auth_header = request.headers.get('Authorization').replace('Bearer', '').strip()
-        print(auth_header)
-        print(type(auth_header))
+        auth_header = request.headers.get('Authorization')
+        auth_dict = json.loads(auth_header.replace('Bearer', '').strip())
+        token = auth_dict['token']
+        decode_jwt = jwt.decode(token, 'SECRET_KEY', algorithms=['HS256'])
+        print('decoded_token is a diction', decode_jwt)
+        print(decode_jwt)
 
-        if 'user_id' in session: # This does not work because session is empty and does not read user id from the previous statement
-            print('Inside Request.method=GET')
+        # Now we have to loop over the database and match the user_id with user_habits
+        if 'user_id' in decode_jwt: # This does not work because session is empty and does not read user id from the previous statement
             #Query to check for users_id
             getUsersIdFromHabitTracker = ("SELECT user_id FROM users_habits")
             sqlCursor.execute(getUsersIdFromHabitTracker)
@@ -112,11 +112,26 @@ def authenticate_user():
             print("users habits", users_habit_user_id)
             #This for loop matches the user session_id to the actual user in the database
             for (users,) in users_habit_user_id:
-                if session['user_id'] == users:
+                if decode_jwt['user_id'] == users:
+                    # We create a select query to get the data from the table
+                    select_all_from_users_habits = ("SELECT user_id, user_habit,habit_count FROM users_habits")
+                    sqlCursor.execute(select_all_from_users_habits)
+                    users_habits_data = sqlCursor.fetchall()
+                    print(users_habits_data)
+
+                    for (users_id, user_habit, habit_count) in users_habits_data:
+                        if decode_jwt['user_id'] == users_id:
+                            return jsonify({'habits': [
+                                {
+                                'user_habit':user_habit,
+                                'habit_count':habit_count
+                                }
+                            ]})
+
                     print('We have to create another query to get the users stuff')
-                    print(users_habit_user_id)
+                    print('users habits id', users)# this returns an integer
                     #We want to add a query here that renders the html and stuff so instead of the endpoint send user data it returns this
-                    return jsonify({'message':'user GET REQUEST'})
+                    return jsonify({'message':'user GET REQUEST Success'})
         return jsonify({'message':'GET request conditional was not hit'})
     # The point of this is to match the user_session_id with user_habits
     return jsonify({'message':'could not reach get or post request'})

@@ -13,7 +13,6 @@ const HabitTrackerUI = () => {
   const [input, setInput] = useState<string>('');
   // We can map habits because it is an array of objects
   const [habits, setHabits] = useState<Todo[]>([]);
-  const [renderHabits, setRenderHabits] = useState<Todo[]>([]);
 
   // Submit Logic: When button is clicked the text inside the input is mapped into a list
   const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -48,19 +47,6 @@ const HabitTrackerUI = () => {
       body: JSON.stringify(payload)
     })
   }, [habits])
-  
-  // This causes backend server to crash theory is that because were trying to make two connects in the same component
-  // useEffect(() => {
-  //   // New api to render habits
-  //   fetch('http://127.0.0.1:5000/sendUserData', {
-  //     method:'GET',
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //       'Accept': 'application/json',
-  //       'Access-Control-Allow-Origin': '*'
-  //     }
-  //   })
-  // },[])
 
   return(
     <>
@@ -89,11 +75,6 @@ const HabitTrackerUI = () => {
         </li>
       ))}
 
-      {renderHabits.map((renderHabits,count) => (
-        <li key={count}>
-          {renderHabits.text} {renderHabits.count}
-        </li>
-      ))}
     </ul>
     <DisplayHabits></DisplayHabits>
 
