@@ -47,6 +47,33 @@ const HabitTrackerUI = () => {
       body: JSON.stringify(payload)
     })
   }, [habits])
+  // Getting habits from DB
+  const [displayHabits, setDisplayHabits] = useState([])
+
+  const token = JSON.parse(sessionStorage.token)
+  console.log(token)
+  useEffect(() => {
+    fetch("http://127.0.0.1:5000/user-auth", {
+      method:"GET",
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Access-Control-Allow-Origin': 'http://localhost:5173',
+        'Access-Control-Allow-Credentials': 'true',
+        'Authorization':`Bearer ${JSON.stringify(token)}`
+      },
+      credentials:'include',
+    }).then((res) => {
+      return res.json()
+    }).then((data) => {
+      console.log('line 23 fetched data', data)
+      const habits = data.habits
+      console.log('line 25 habits', habits) // This is an array??
+      console.log('line 26 typeof habits', typeof habits)// This is an object??
+      setDisplayHabits(habits)
+    })
+  },[])
+  console.log(' displayed habits useState variable',displayHabits)
 
   return(
     <>
@@ -76,7 +103,13 @@ const HabitTrackerUI = () => {
       ))}
 
     </ul>
-    <DisplayHabits></DisplayHabits>
+    {displayHabits ? 
+        <ul>
+        {displayHabits.map(habit => (
+          <li key={habit}>{habit.user_habit} {habit.habit_count}</li>
+        ))}
+      </ul> : <p>Something Went Wrong</p>
+      }
 
     </>
   )

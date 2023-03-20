@@ -34,7 +34,7 @@ const LoginPage = () => {
       return response.json()
     }).then((data) => {
       const stringifyData = JSON.stringify(data)
-      console.log(stringifyData)
+      console.log('%c Data from POST Request', 'color:orange;', stringifyData)
       sessionStorage.setItem('token', stringifyData)
       // since js returns an object we always have to treat the reponse like an object?
       if(data) {
