@@ -1,4 +1,7 @@
 export async function postUserLogin(loginInfo:any) {
+  console.log('%c loginInfo in postUserLogin', 'color:red;', loginInfo)
+  console.log('%c loginInfo in postUserLogin', 'color:red;', typeof loginInfo)
+
   const response = await fetch("http://127.0.0.1:5000/user-auth", {
     method: "POST",
     headers: {
