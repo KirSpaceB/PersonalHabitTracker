@@ -1,50 +1,27 @@
 import styles from '../styles/LoginPage.module.css';
-import { Form, useNavigate, redirect } from "react-router-dom";
 import FormInput from './FormInput';
 import { useState } from 'react';
-
+import { postUserLogin } from '../services/user-auth';
+import ResuableRoute from './ResuableRoute';
+import { useNavigate } from 'react-router-dom';
 const LoginPage = () => {
+  const navigationHook = useNavigate()
 
-  const navigateHook = useNavigate()
-  const handleSignUpNavigation = () => {
-    navigateHook('SignUp')
-  }
   // Change state whenever input mutates
   const [loginInfo, setLoginInfo] = useState({
     userName:'',
     password:'',
   })
   
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    console.log(loginInfo)
-    
-    fetch("http://127.0.0.1:5000/user-auth", {
-      method: "POST",
-      headers: {
-        "Content-type": "application/json",
-        "Accept": "application/json",
-        "Access-Control-Allow-Origin": "http://localhost:5173",
-        "Access-Control-Allow-Credentials": "http://localhost:5174",
-      },
-      credentials:'include',
-      body: JSON.stringify(loginInfo)
-    }).then((response) => {
-      // Always have to return the response, and we always have to jsonify it
-      return response.json()
-    }).then((data) => {
-      const stringifyData = JSON.stringify(data)
-      console.log('%c Data from POST Request', 'color:orange;', stringifyData)
-      sessionStorage.setItem('token', stringifyData)
-      // since js returns an object we always have to treat the reponse like an object?
-      if(data) {
-        navigateHook('HabitTracker/Home')
-      } else {
-        alert('wrong username or password')
-      }
-    })
+    const response = await postUserLogin(loginInfo)
+    console.log('%c Token was recieved from the POST request to the backend at LOGIN PAGE', 'color:green;', response)
+    // Now the Web Session Storage has a token
+    if(response != null) {
+      navigationHook('/HabitTracker/Home')
+    }
   }
-
   //Review
   const handleUserInput = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     // Object destructuring
@@ -60,19 +37,16 @@ const LoginPage = () => {
             <h1 className={styles.LoginPage_title}>Habit Tracker</h1>
 
             <form onSubmit={handleSubmit}>
-              <FormInput type="text" name="userName" value={loginInfo.userName} onChange={handleUserInput} placeholder='UserName'/>
-              <FormInput type="password" name="password" value={loginInfo.password} onChange={handleUserInput} placeholder='password'/>
+              <FormInput type="text" name="userName" value={loginInfo.userName} onChange={handleUserInput} placeholder='UserName' error={''}/>
+              <FormInput type="password" name="password" value={loginInfo.password} onChange={handleUserInput} placeholder='password' error={''}/>
               <input type='submit'></input>
             </form>
-
-            <div className={styles.LoginPage_signUp}>
-              <button onClick={handleSignUpNavigation} className={styles.LoginPage_signUpBtn}>Sign Up</button>
-            </div>
-
+            
+            <ResuableRoute route='/SignUp'/>
+            
           </div>
         </div>
     </>
   )
 }
-
 export default LoginPage

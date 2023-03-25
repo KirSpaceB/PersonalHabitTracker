@@ -6,7 +6,7 @@ const ProtectedRoute = () => {
   // So Protected Route is working becasue if we set this to false it redicts correctly
   // Found the issue so when user does not initially login he cannot access the protected routes, but when user logs in and out he can access the protected routes. However is browser is closed and reopened the SESSION ENDS leading to user needs to login to get a new session token
   let isAuth = sessionStorage.getItem('token')
-  console.log("session storage in Habit/Tracker", isAuth)
+  console.log("%c session storage in Habit/Tracker", "color:green;", isAuth)
 
   return (
     isAuth ? <Outlet/> : <Navigate to={'/'} replace/>

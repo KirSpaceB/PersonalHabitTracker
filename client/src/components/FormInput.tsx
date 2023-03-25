@@ -1,11 +1,4 @@
-type InputProps = {
-  type:string;
-  name: string;
-  value: string;
-  placeholder: string;
-  onChange: (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
-  error: string;
-};
+import { InputProps } from "../utils/types";
 
 const FormInput: React.FC<InputProps> = ({ type, name, placeholder, value, onChange, error,}) => {
   return (

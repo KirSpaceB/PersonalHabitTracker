@@ -1,204 +1,155 @@
 from flask import Flask, make_response, request,jsonify,session
 import random
 from flask_cors import CORS
-import mysql.connector
 import jwt
 from datetime import datetime, timedelta
 import os
 import json
+from colorama import init
+from colorama import Fore, Back, Style
+from Database import InstantiateDatabase
 
+init()
 app = Flask(__name__)
 cors = CORS(app, resources={r"/*": {"origins": "http://localhost:5173"}}, supports_credentials=True) # This allows CORS to accept all websites
 app.secret_key = 'bakai'
 secret_key = os.environ.get('SECRET_KEY') or 'hard-to-guess-string'
+#Creates new user up signup
 @app.route('/user-signup', methods=['POST'])
 def signup_db():
-    print('Signup_db is working')
     #data from Signup page turn to json object
     data=request.get_json()
-    print(data)
-
-    DB = mysql.connector.connect(
-        user="root",
-        password="ManOfSorrows1!",
-        host="localhost",
-        database="habit_tracker_users" #Species what tb to use when creating tables etc.
-    )
-    #Allows us to execute sql code in python
-    sqlCursor = DB.cursor()
+    try:
+        DB = InstantiateDatabase(
+            user='root',
+            password='ManOfSorrows1!',
+            host='localhost',
+            database='habit_tracker_users'
+        )
+    except:
+        return jsonify({'message':'Someting went wrong in the user-signup endpoint'})
 
     #Set pointer to 
     userName = data['userName']
-    passWord = data['password']
+    password = data['password']
 
-    userAccount = (userName,passWord)
+    userAccount = (userName,password)
 
     sqlInsertUserName = "INSERT INTO users (user_name,password) VALUES (%s,%s)"
 
-    sqlCursor.execute(sqlInsertUserName, userAccount)
-    sqlCursor.execute(sqlInsertUserName, (userName, passWord))
-
-    DB.commit()
+    DB.execute_insert_query(sqlInsertUserName,userAccount)
 
     return {"message": "Successfully Registered"}
-# You cannot use double quotes in your string literals only single quotes ''
-# We have to host the backend first before lauching the frontend
+#Create seperate files for each class(put in own folder)
+#Create a script that checks the files in the queries folder and look for specifc queries to execute base on needed functionality
+#This decorator function needs a function exactly below it
 @app.route("/user-auth", methods=["POST", "GET"])
 def authenticate_user():
-
     print('User-auth is working')
     try:
-        DB = mysql.connector.connect(
-            user="root",
-            password="ManOfSorrows1!",
-            host="localhost",
-            database="habit_tracker_users" #Species what tb to use when creating tables etc.
+        DB = InstantiateDatabase(
+            user='root',
+            password='ManOfSorrows1!',
+            host='localhost',
+            database='habit_tracker_users'
         )
     except:
-        print('sql error')
-
-    sqlCursor = DB.cursor()
-    #SQL command to execute
-    checkForUser = ("SELECT * FROM users")
-    #Execute query
-    sqlCursor.execute(checkForUser)
-    #generate token on server
-    #ui saves token
-    
-    #Make initial authorization request, the server responds with the bearer token, header has authorization bearer, sever get header and matches with session, then gets correct session, therefore matching user data.
-    #Difference between bearer and cookie is, instead of sent by cookie, it sent by the http header.
-
-    #Fetches all the selected users in the DB
-    results = sqlCursor.fetchall()
-
+        return jsonify({'message':'user-auth failed to connect to db'})
+    selectAllFromUsersTable = DB.execute_query('SELECT * FROM users')
+    #When user tries and logins in
     if request.method == "POST":
         try:
             loginInfo = request.get_json() # GET REQUEST DONT HAVE A BODY AND GET_JSON GETS FROM THE BODY AKA ANY REQUEST THAT HAS A BODY(POST)
-            print("request.getjson", loginInfo)
+            print(Fore.GREEN, "loginInfo", loginInfo)
         except:
             print('invalid request')
-            return ({'message':'return statement in try-catch'}), 400
+            return ({'message':'return statement in try-catch line 66'}), 400
         
-        for row in results:
-            #Rn this forloop only hits once
+        for row in selectAllFromUsersTable:
             print(row)
             if row[1] == loginInfo['userName'] and row[2] == loginInfo['password']:
-                #row[0] is the user_id in the users table
-                # This session allows us to attach a session key to user_id from the database and since that user_id is a foreign key to users_habits we can then get the many to one relationship also know as the habits for users
                 user_id = row[0]
                 token = jwt.encode(
                     {'user_id':user_id}, 'SECRET_KEY', algorithm='HS256'
                 )
                 return jsonify({'token':token})
         return jsonify({'message':'POST request conditional was not hit'})
-    #Flask automatically gives cookie for each new session because they are two seperate requests it will lead to different
+    #Flask automatically gives cookie for each new session because they are two seperate requests it will lead to different(This was a bug still do not know why this was the case)
+    #Gets user_habit depending on user_id
     if request.method == "GET":
-
         auth_header = request.headers.get('Authorization')
         auth_dict = json.loads(auth_header.replace('Bearer', '').strip())
         token = auth_dict['token']
         decode_jwt = jwt.decode(token, 'SECRET_KEY', algorithms=['HS256'])
-        print('decoded_token is a diction', decode_jwt)
-        print(decode_jwt)
+        print(Fore.GREEN, 'Decoding request in GET request', decode_jwt)
+        
+        #Guard clause
+        if 'user_id' not in decode_jwt:
+            return jsonify({'message':'user_id is not in token'}), 404
+        #Query to check for users_id
+        selectUserIdFromHabitTable = DB.execute_query('SELECT user_id FROM users_habits')
 
-        # Now we have to loop over the database and match the user_id with user_habits
-        if 'user_id' in decode_jwt: # This does not work because session is empty and does not read user id from the previous statement
-            #Query to check for users_id
-            getUsersIdFromHabitTracker = ("SELECT user_id FROM users_habits")
-            sqlCursor.execute(getUsersIdFromHabitTracker)
-            #fetches all remaining rows from a query
-            users_habit_user_id = sqlCursor.fetchall()
-
-            print("users habits", users_habit_user_id)
-            #This for loop matches the user session_id to the actual user in the database
-            for (users,) in users_habit_user_id:
-                if decode_jwt['user_id'] == users:
-                    # We create a select query to get the data from the table
-                    select_all_from_users_habits = ("SELECT user_id, user_habit,habit_count FROM users_habits")
-                    sqlCursor.execute(select_all_from_users_habits)
-                    users_habits_data = sqlCursor.fetchall()
-                    print(users_habits_data)
-
-                    for (users_id, user_habit, habit_count) in users_habits_data:
-                        if decode_jwt['user_id'] == users_id:
-                            return jsonify({'habits': [
-                                {
-                                'user_habit':user_habit,
-                                'habit_count':habit_count
-                                }
-                            ]})
-
-                    print('We have to create another query to get the users stuff')
-                    print('users habits id', users)# this returns an integer
-                    #We want to add a query here that renders the html and stuff so instead of the endpoint send user data it returns this
-                    return jsonify({'message':'user GET REQUEST Success'})
-        return jsonify({'message':'GET request conditional was not hit'})
-    # The point of this is to match the user_session_id with user_habits
+        print(Fore.GREEN, "Query to get all userID from the habits table", selectUserIdFromHabitTable)
+        #This for loop matches the user session_id to the actual user in the database
+        for (users,) in selectUserIdFromHabitTable:
+            if decode_jwt['user_id'] != users:
+                return jsonify({'message':'Went wrong with matching decoded_jwt to user id line 96'})
+            # We create a select query to get the data from the table
+            selectUserHabitInfoFromHabitTable = DB.execute_query('SELECT user_id, user_habit, habit_count FROM users_habits')
+            #Create handling to make sure frontend is not sending an empty array
+            for (users_id, user_habit, habit_count) in selectUserHabitInfoFromHabitTable:
+                if decode_jwt['user_id'] != users_id:
+                    return jsonify({'message':'Went wrong with matching decoded_jwt to user id line 103'})
+                return jsonify({'habits': [
+                    {
+                    'user_habit':user_habit,
+                    'habit_count':habit_count
+                    }
+                ]})
+        return jsonify({'message':'For loop in get request was not hit'})
     return jsonify({'message':'could not reach get or post request'})
 
-@app.route("/database", methods=["POST"])
+@app.route("/createUserHabits", methods=["POST", "GET"])
 def connect():
-    print('Database is working')
-    #Review multi threading problem
-    #Ecapsulate this variable
-    DBs = mysql.connector.connect(
-        user="root",
-        password="ManOfSorrows1!",
-        host="localhost",
-        database="habit_tracker_users" 
-    )
-    
-    # Cursor allows us to communitcate the backend with the DB
-    mycursor = DBs.cursor()
-
-    #Retrieve JSON data
-    data=request.get_json() # returns hashmap
-    #extract the data you want to insert into database
-    print(data)
-
+    print(Fore.GREEN + 'createUserHabitsEndPoint is working')
     try:
-        text = data[0]['text']#From React
-        count = data[0]['count'] #passing undefined to sql query causing error
-        # userIdCount = 0#Basically a bootleg version of AUTO_INCREMENT
-        # # We have to figure out how to auto_increment our user_id along with foreign key
-        sql = "INSERT INTO users_habits (user_habit,habit_count) VALUES (%s, %s);"
+        DB = InstantiateDatabase(
+            user='root',
+            password='ManOfSorrows1!',
+            host='localhost',
+            database='habit_tracker_users'
+        )
+    except:
+        return {'message':'Could not instantiate database in createUserHabits endpoint'}, 400
+    #Part GET Request logic
+    userIdFromJwtToken = None
+    if request.method == "GET":
+        try:
+            createUserHabitsHeader = request.headers.get('Authorization')
+            createUserHabitsHeaderDict = json.loads(createUserHabitsHeader.replace('Bearer', '').strip())
+            token = createUserHabitsHeaderDict['token']
+            userIdFromJwtToken = jwt.decode(token, 'SECRET_KEY', algorithms=['HS256'])
+            print(Fore.RED, 'Decoded Token in createUserHabitsHeader', userIdFromJwtToken)
+        except:
+            return jsonify({'message':'GET request failed in createUserHabits'}), 400
 
-        val = (text,count)
+    selectAllUsersHabitsQuery = DB.execute_query('SELECT * FROM users_habits')
+    print(Fore.RED, 'Query in createUserHabitsHeader', selectAllUsersHabitsQuery)
 
-        mycursor.execute(sql,val) # Now executes the problem was with the sql variable, apparently it was wrong
+    if request.method == "POST":
+        for tupleItems in selectAllUsersHabitsQuery:
+            print(Fore.RED, 'user_id in for loop', tupleItems[0])
+            print(Fore.RED, 'Query in createUserHabitsHeader', userIdFromJwtToken)
 
-        print(mycursor.execute(sql,val))
-
-        DBs.commit()
-        return jsonify({'Message': 'Sent data successfully'}), 200
-    except: 
-        return 'Bad Request', 500
-    
-@app.route('/sendUserData', methods=['GET'])
-def sendUserData():
-    DB = mysql.connector.connect(
-        user="root",
-        password="ManOfSorrows1!",
-        host="localhost",
-        database="habit_tracker_users" 
-    )
-    mySQLCursor = DB.cursor()
-    # We first select a table, then select the rows from that table that we want to mutate. After that we join the rows to the users table by the two matching primary keys on the table
-    getUserIdQuery = "SELECT * FROM users_habits INNER JOIN users ON users_habits.user_id = users.user_id"
-    print('test')
-    # We need to match user_id to users_habits
-    # It should only fetch user_id 4
-    # Only fetch if user_id from users_habits matches user_id from users.
-    mySQLCursor.execute(getUserIdQuery)
-    
-    results = mySQLCursor.fetchall()
-
-    print('This is working and the line of code below this are the results')
-    # print(results)
-    # for users in results:
-    #     # print(users)
-    
-    return results
-
+            if userIdFromJwtToken != tupleItems[0]:
+                return jsonify({'message':'something went wrong in for loop line 140'}), 400
+            dataFromPostRequest = request.get_json()
+            print(Fore.RED,'Line 148 dataFromPostRequest',dataFromPostRequest)
+            habitFromRequest = dataFromPostRequest['habits'][0]['text']
+            countFromRequest = dataFromPostRequest['habits'][0]['count']
+            valPassedToInsertQuery = (habitFromRequest,countFromRequest)
+            DB.execute_insert_query('INSERT INTO users_habits (user_habit,habit_count) VALUES (%s,%s)',valPassedToInsertQuery)
+            return jsonify({'Message': 'Successfully Executed Post Request'}), 200
+    return jsonify({'message':'Something went wrong with createUserHabits'}), 400
 if __name__ == "__main__":
     app.run(debug=True)

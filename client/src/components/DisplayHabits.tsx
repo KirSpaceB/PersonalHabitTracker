@@ -27,6 +27,7 @@ const DisplayHabits = () => {
       setDisplayHabits(habits)
     })
   },[])
+  
   console.log('line 30 displayed habits useState variable',displayHabits)
 
   return (
