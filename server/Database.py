@@ -32,3 +32,12 @@ class InstantiateDatabase:
         cursor.execute(query, values)
         self.connector.commit()
         cursor.close()
+
+    def fetch_one(self, query:str, values:any=None):
+        if self.connector is None:
+            self.mysqlConnector()
+        cursor = self.connector.cursor()
+        cursor.execute(query, values)
+        result = cursor.fetchone()
+        cursor.close()
+        return result

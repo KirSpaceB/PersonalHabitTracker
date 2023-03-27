@@ -7,7 +7,7 @@ from Database import InstantiateDatabase
 user_auth_blueprint = Blueprint('user_auth', __name__)
 @user_auth_blueprint.route('/user-auth', methods=['POST', 'GET'])
 def authenticate_user():
-    print('User-auth is working')
+    print('User-auth is working line 10 in user_Auth')
     try:
         DB = InstantiateDatabase(
             user='root',
@@ -44,7 +44,6 @@ def authenticate_user():
         auth_dict = json.loads(auth_header.replace('Bearer', '').strip())
         token = auth_dict['token']
         decode_jwt = jwt.decode(token, 'SECRET_KEY', algorithms=['HS256'])
-        print(Fore.GREEN, 'Decoding request in GET request', decode_jwt)
         
         #Guard clause
         if 'user_id' not in decode_jwt:
@@ -52,22 +51,20 @@ def authenticate_user():
         #Query to check for users_id
         selectUserIdFromHabitTable = DB.execute_query('SELECT user_id FROM users_habits')
 
-        print(Fore.GREEN, "Query to get all userID from the habits table", selectUserIdFromHabitTable)
         #This for loop matches the user session_id to the actual user in the database
         for (users,) in selectUserIdFromHabitTable:
-            if decode_jwt['user_id'] != users:
-                return jsonify({'message':'Went wrong with matching decoded_jwt to user id line 96'})
-            # We create a select query to get the data from the table
-            selectUserHabitInfoFromHabitTable = DB.execute_query('SELECT user_id, user_habit, habit_count FROM users_habits')
-            #Create handling to make sure frontend is not sending an empty array
+
+            if decode_jwt['user_id'] == users:
+                # We create a select query to get the data from the table
+                selectUserHabitInfoFromHabitTable = DB.execute_query('SELECT user_id, user_habit, habit_count FROM users_habits')
+                print(Fore.BLUE, "Query that slects UserHabitsFromTable", selectUserHabitInfoFromHabitTable)
+
+            habits_set = set()
+
             for (users_id, user_habit, habit_count) in selectUserHabitInfoFromHabitTable:
-                if decode_jwt['user_id'] != users_id:
-                    return jsonify({'message':'Went wrong with matching decoded_jwt to user id line 103'})
-                return jsonify({'habits': [
-                    {
-                    'user_habit':user_habit,
-                    'habit_count':habit_count
-                    }
-                ]})
+                if decode_jwt['user_id'] == users_id:
+                    habits_set.add((user_habit, habit_count))
+            habits_list = [{'user_habit': user_habit, 'habit_count': habit_count} for user_habit, habit_count in habits_set]
+            return jsonify({'habits': habits_list})
         return jsonify({'message':'For loop in get request was not hit'})
     return jsonify({'message':'could not reach get or post request'})
