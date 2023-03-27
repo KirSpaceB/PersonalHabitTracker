@@ -1,6 +1,9 @@
 export async function getUserHabits() {
   const token = JSON.parse(sessionStorage.token)
-  console.log('%c Token in getUserHabits', 'color:red;', token)
+  if(!token) {
+    console.log('%c NO TOKEN in getUserHabits', 'color:red;')
+
+  }
   
   const response = await fetch("http://127.0.0.1:5000/user-auth", {
     method:"GET",
@@ -15,9 +18,10 @@ export async function getUserHabits() {
   })
   const data = await response.json()
 
-  console.log(data)
+  if (!data) {
+    console.log('NO REPONSE DATA IN uset-auth/get-ts')
+  }
   const habits = data.habits
 
-  console.log('%c getUserHabits API Response', 'color:green;', habits)
   return habits
 }

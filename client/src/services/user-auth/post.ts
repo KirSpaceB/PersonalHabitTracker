@@ -8,7 +8,11 @@ export async function postUserLogin(loginInfo:any) {
     "Access-Control-Allow-Credentials": "http://localhost:5174"
   }
   const credentials = 'include'
-  console.log('%c loginInfo in postUserLogin', 'color:red;', loginInfo)
+  //Checks for Login info learn more
+  if (!loginInfo || Object.keys(loginInfo).length === 0) {
+    console.log('LoginInfo is empty or undefined.')
+    return null
+  }
 
   const response = await fetch(url, {method,headers,credentials,
     body: JSON.stringify(loginInfo)

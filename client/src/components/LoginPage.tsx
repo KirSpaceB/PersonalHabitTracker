@@ -17,10 +17,11 @@ const LoginPage = () => {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     const response = await postUserLogin(loginInfo)
-    console.log('%c Token was recieved from the POST request to the backend at LOGIN PAGE', 'color:green;', response)
     // Now the Web Session Storage has a token
     if(response != null) {
       navigationHook('/HabitTracker/Home')
+    } else {
+      console.log('%c NO TOKEN RECIEVED CHECK HANDLESUBMIT OR API', 'color:red;')
     }
   }
   //Review
