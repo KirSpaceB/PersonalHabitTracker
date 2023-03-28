@@ -1,9 +1,9 @@
-export async function getDecodedToken() {
-  const getUserId = 'http://127.0.0.1:5000/decode_user_id'
+export async function getDecodedUserId() {
+  const decodeUserIdUrl = 'http://127.0.0.1:5000/decode_user_id'
 
   const token = JSON.parse(sessionStorage.token)
   console.log('%c token in createUsersHabits/get.ts', 'color: red;', token)
-  const response = await fetch(getUserId, {
+  const response = await fetch(decodeUserIdUrl, {
     method:"GET",
     headers: {
       'Content-Type':'application/json',

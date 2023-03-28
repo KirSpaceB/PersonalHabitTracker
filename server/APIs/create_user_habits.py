@@ -16,7 +16,7 @@ def connect():
     except:
         return {'message':'Could not instantiate database in createUserHabits endpoint'}, 400
     dataFromPostRequest = request.get_json()
-    print(Fore.RED, 'Line 20 dataFromPostRequest', dataFromPostRequest)
+    print(Fore.RED, 'Line 19 dataFromPostRequest', dataFromPostRequest)
 
     user_id = dataFromPostRequest['user_id']
 

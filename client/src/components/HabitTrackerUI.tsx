@@ -3,7 +3,8 @@ import styles from '../styles/HabitTrackerUI.module.css';
 import {useState} from "react"
 import { getUserHabits } from "../services/user-auth";
 import { postSendUserHabits } from "../services/createUserHabits";
-import { getDecodedToken } from "../services/createUserHabits/get";
+import { getDecodedUserId } from "../services/decode_user_token/get";
+import { deleteUserHabitAPI } from "../services/delete_user_habit/delete";
 type Todo = {
   text: string,
   count: number,
@@ -21,17 +22,22 @@ const HabitTrackerUI = () => {
       console.log('%c Habits in side the habits.find statement', 'color:red;', habits)
       return;
     }
+    const newHabit = { text: input, count: 1 };
+
+    console.log("🚀 ~ file: HabitTrackerUI.tsx:27 ~ handleSubmit ~ newHabit:", newHabit)
     // Habits takes input as one of the values which is another state 
     const updatedHabits = [...habits, { text: input, count: 1 }];
+
     setHabits(updatedHabits);
-    console.log('%c updatedHabits in handleSubmit', 'color:red;', updatedHabits);
-    
-    const decodedToken = await getDecodedToken();
-    if (!decodedToken) {
-      console.log('THERES A TOKEN MISSING IN HANDLESUBMIT AT HABITTRACKERUI');
-    } 
-    postSendUserHabits(updatedHabits, decodedToken);
+
+    const decodedTokenUserId = await getDecodedUserId();
+
+    if (!decodedTokenUserId) {
+      console.log('THERES A TOKEN MISSING IN HANDLESUBMIT AT HABITTRACKERUI')
+    }
+    postSendUserHabits(newHabit, decodedTokenUserId);
   };
+  
 
   // Logic for adding 
   const handleIncrement = (index: number) => {
@@ -44,13 +50,22 @@ const HabitTrackerUI = () => {
 
   const handleDeleteUIHabit = (index) => {
     const updatedHabits = [...displayHabits];
-    updatedHabits.splice(index, 1);
-    setDisplayHabits(updatedHabits);
+    updatedHabits.splice(index, 1)
+    setDisplayHabits(updatedHabits)
   };
 
-  const handleDeleteFetchedHabit = (habitToDelete) => {
+  const handleDeleteFetchedHabit = async (habitToDelete) => {
     const updatedHabits = displayHabits.filter(habit => habit !== habitToDelete);
-    setDisplayHabits(updatedHabits);
+    const userIdSentToDeleteUserHabitAPI = await getDecodedUserId();
+    setDisplayHabits(updatedHabits)
+
+    const valuesSentToDeleteUserHabitAPI = 
+    {
+      user_id:userIdSentToDeleteUserHabitAPI,
+      habitGoingToBeDelete:habitToDelete
+    }
+    console.log('%c valuesSentToDeleteUserHabitAPI', 'color:red;', valuesSentToDeleteUserHabitAPI);
+    deleteUserHabitAPI(valuesSentToDeleteUserHabitAPI)
   };
 
   // 'GET' Request to render habits
@@ -72,7 +87,7 @@ const HabitTrackerUI = () => {
         <input
           type="text"
           placeholder="Add a habit"
-          value={input}
+          value={(input)}
           onChange={(e) => setInput(e.target.value)}
           name="text"
           className="todo_input"

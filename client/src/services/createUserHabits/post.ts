@@ -9,9 +9,14 @@ export async function postSendUserHabits(habits:any,user_id:number) {
     "Access-Control-Allow-Credentials": "http://localhost:5174"// Indicates that this has nothing to do with connection since its different from localhost 5173
   }
   const credentials = 'include'
-  if (habits.length > 0) {
+  if (habits) {
     const payload = {
-      habits:habits,
+      habits:[
+        {
+          "text":habits.text,
+          "count":habits.count
+        }
+      ],
       user_id:user_id
     }
     console.log("%c Payload in createUserHabits endpoint to send to backend", "color: purple;", payload)
