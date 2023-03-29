@@ -17,7 +17,6 @@ const LoginPage = () => {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     const response = await postUserLogin(loginInfo)
-    console.log("🚀 ~ file: LoginPage.tsx:20 ~ handleSubmit ~ response:", response)
     // Now the Web Session Storage has a token
     if(response != null) {
       navigationHook('/HabitTracker/Home')

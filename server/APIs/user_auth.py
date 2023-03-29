@@ -44,9 +44,11 @@ def authenticate_user():
         auth_dict = json.loads(auth_header.replace('Bearer', '').strip())
         token = auth_dict['token']
         decode_jwt = jwt.decode(token, 'SECRET_KEY', algorithms=['HS256'])
+        print("🐍 File: APIs/user_auth.py | Line: 47 | authenticate_user ~ decode_jwt",decode_jwt)
         
         #Guard clause
         if 'user_id' not in decode_jwt:
+            print("🐍 File: APIs/user_auth.py | Line: 51 | authenticate_user ~ decode_jwt",decode_jwt)
             return jsonify({'message':'user_id is not in token'}), 404
         #Query to check for users_id
         selectUserIdFromHabitTable = DB.execute_query('SELECT user_id FROM users_habits')
@@ -59,12 +61,13 @@ def authenticate_user():
                 selectUserHabitInfoFromHabitTable = DB.execute_query('SELECT user_id, user_habit, habit_count FROM users_habits')
                 print(Fore.BLUE, "Query that slects UserHabitsFromTable", selectUserHabitInfoFromHabitTable)
 
-            habits_set = set()
+                habits_set = set()
 
-            for (users_id, user_habit, habit_count) in selectUserHabitInfoFromHabitTable:
-                if decode_jwt['user_id'] == users_id:
-                    habits_set.add((user_habit, habit_count))
-            habits_list = [{'user_habit': user_habit, 'habit_count': habit_count} for user_habit, habit_count in habits_set]
-            return jsonify({'habits': habits_list})
+                for (users_id, user_habit, habit_count) in selectUserHabitInfoFromHabitTable:
+                    if decode_jwt['user_id'] == users_id:
+                        habits_set.add((user_habit, habit_count))
+
+                habits_list = [{'user_habit': user_habit, 'habit_count': habit_count} for user_habit, habit_count in habits_set]
+                return jsonify({'habits': habits_list})
         return jsonify({'message':'For loop in get request was not hit'})
     return jsonify({'message':'could not reach get or post request'})
