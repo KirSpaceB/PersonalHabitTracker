@@ -11,5 +11,6 @@ export default {
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
   moduleNameMapper: {
     '\\.(css|less|scss|sass)$': '<rootDir>/__mocks__/styleMock.ts', // Use .ts instead of .js
-  }
+  },
+  testEnvironment: "jsdom",
 };
