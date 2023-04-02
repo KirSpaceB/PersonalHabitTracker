@@ -1,5 +1,9 @@
 // We make this into a function, that takes one argument, which is going to be whatever is in the HabitTrackerUI
-export async function postSendUserHabits(habits:any,user_id:number) {
+interface postSendUserHabitsArgumentsInterface {
+  text:string
+  count:number
+}
+export async function postSendUserHabits(habits:postSendUserHabitsArgumentsInterface,user_id:number) {
   const url = "http://127.0.0.1:5000/createUserHabits"
   const method = 'POST'
   const headers = {

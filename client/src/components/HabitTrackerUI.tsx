@@ -35,8 +35,11 @@ const HabitTrackerUI = () => {
     if (!decodedTokenUserId) {
       console.log('THERES A TOKEN MISSING IN HANDLESUBMIT AT HABITTRACKERUI')
     }
+    console.log("🚀 ~ file: HabitTrackerUI.tsx:41 ~ handleSubmit ~ decodedTokenUserId:", decodedTokenUserId)
+    
     postSendUserHabits(newHabit, decodedTokenUserId);
   };
+
   
 
   // Logic for adding 

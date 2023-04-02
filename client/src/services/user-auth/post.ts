@@ -18,7 +18,7 @@ export async function postUserLogin(loginInfo:any) {
     body: JSON.stringify(loginInfo)
   })
   // Always have to return the response, and we always have to jsonify it
-  const data = await response.json()
+  const data = await response.json()  
 
   const stringifyData = JSON.stringify(data)
   sessionStorage.setItem('token', stringifyData)

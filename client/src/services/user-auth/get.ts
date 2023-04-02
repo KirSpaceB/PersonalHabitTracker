@@ -1,8 +1,7 @@
 export async function getUserHabits() {
-  const token = JSON.parse(sessionStorage.token)
+  const token = JSON.parse(sessionStorage.getItem('token') || '{}')
   if(!token) {
     console.log('%c NO TOKEN in getUserHabits', 'color:red;')
-
   }
   
   const response = await fetch("http://127.0.0.1:5000/user-auth", {
