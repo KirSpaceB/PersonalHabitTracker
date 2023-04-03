@@ -16,7 +16,6 @@ export async function getDecodedUserId() {
   })
   const data = await response.json();
   const stringifyData = JSON.stringify(data.decoded_user_id.user_id);
-  const userId = parseInt(stringifyData);
-  
+  const userId = parseInt(stringifyData);  
   return Promise.resolve(userId);
 }
