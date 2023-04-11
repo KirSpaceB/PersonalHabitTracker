@@ -13,7 +13,7 @@ describe('test for post request in createUserHabits', () => {
     const argumentOne = {text: 'tstas', count:1};
     const argumentTwo = 1;
 
-
+    // This doesnt need to be here it could be outside, and also we need to clear mocks
     global.fetch = jest.fn().mockResolvedValue({
       stats:200,
       json:() => Promise.resolve({'Message':'Successfully Executed Line 33'})
