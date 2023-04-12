@@ -1,12 +1,14 @@
 interface payloadSentToBackendInterface {
+  habit:string
   user:number
   count:number
 }
-export async function updateCountClientAPI(userID:number, incrementedCount:number) {
+export async function updateCountClientAPI(habit:string,userID:number, incrementedCount:number) {
   console.log("🚀 ~ file: patch.ts:6 ~ updateCountClientAPI ~ userID:", userID)
   const payload:payloadSentToBackendInterface = {
+    habit:habit,
     user:userID,
-    count:incrementedCount
+    count:incrementedCount + 1
   };
   const requestHeaders = {
     method:'PATCH',

@@ -43,10 +43,13 @@ const HabitTrackerUI = () => {
   const handleIncrement = async (index: number) => {
     
     const updatedHabits = [...habits];
+    console.log("🚀 ~ file: HabitTrackerUI.tsx:46 ~ handleIncrement ~ updatedHabits:", updatedHabits)
 
     const incrementIndex = updatedHabits[index].count++;
+    const habit = updatedHabits[0].text;
+    console.log("🚀 ~ file: HabitTrackerUI.tsx:50 ~ handleIncrement ~ habit:", habit)
     const user_id = await getDecodedUserId()
-    updateCountClientAPI(user_id, incrementIndex);
+    updateCountClientAPI(habit,user_id, incrementIndex);
     setHabits(updatedHabits);
   };
 
