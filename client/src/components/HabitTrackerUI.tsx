@@ -5,6 +5,7 @@ import { getUserHabits } from "../services/user-auth";
 import { postSendUserHabits } from "../services/createUserHabits";
 import { getDecodedUserId } from "../services/decode_user_token/get";
 import { deleteUserHabitAPI } from "../services/delete_user_habit/delete";
+import { updateCountClientAPI } from "../services/updateCount/patch";
 type Todo = {
   text: string,
   count: number,
@@ -18,10 +19,7 @@ const HabitTrackerUI = () => {
 
   const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
     // Check if the habit already exists, if yes, return without adding a duplicate
-    if (habits.find((habit) => habit.text === input)) {
-      console.log('%c Habits in side the habits.find statement', 'color:red;', habits)
-      return;
-    }
+
     const newHabit = { text: input, count: 1 };
 
     console.log("🚀 ~ file: HabitTrackerUI.tsx:27 ~ handleSubmit ~ newHabit:", newHabit)
@@ -40,13 +38,17 @@ const HabitTrackerUI = () => {
   
 
   // Logic for adding 
-  const handleIncrement = (index: number) => {
+  // For handle increment we want to update the data in the db
+  // match user_id then find that habit_count in the user_id
+  const handleIncrement = async (index: number) => {
+    
     const updatedHabits = [...habits];
-    console.log('%c updatedHabits in handleIncrement', 'color:red;', updatedHabits);
 
-    updatedHabits[index].count++;
+    const incrementIndex = updatedHabits[index].count++;
+    const user_id = await getDecodedUserId()
+    updateCountClientAPI(user_id, incrementIndex);
     setHabits(updatedHabits);
-  }
+  };
 
   const handleDeleteUIHabit = (index) => {
     const updatedHabits = [...displayHabits];

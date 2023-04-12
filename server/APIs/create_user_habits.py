@@ -18,11 +18,11 @@ def connect():
     dataFromPostRequest = request.get_json()
     print(Fore.RED, 'Line 19 dataFromPostRequest', dataFromPostRequest)
 
-    user_id = dataFromPostRequest['user_id']
+    user_id = dataFromPostRequest['user_id'];
 
     for habit in dataFromPostRequest['habits']:
-        habitFromRequest = habit['text']
-        countFromRequest = habit['count']
+        habitFromRequest = habit['text'];
+        countFromRequest = habit['count'];
 
         select_habit_query = 'SELECT * FROM users_habits WHERE user_id = %s AND user_habit = %s'
         existing_habit = DB.fetch_one(select_habit_query, (user_id, habitFromRequest))
