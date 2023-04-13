@@ -91,10 +91,6 @@ const HabitTrackerUI = () => {
     const decodedUserID = await getDecodedUserId();
     const habitToSendForValidation = updatedHabits[incrementedNumber].user_habit;
     
-    
-    // const habitToSendForValidation = incrementedNumber.user_habit;
-    // const incrementNumber = incrementedNumber.habit_count++;
-    // const decodedUserID = await getDecodedUserId()
     setDisplayHabits(updatedHabits)
     incrementDisplayCount(decodedUserID,habitToSendForValidation,incrementNumber)
   };

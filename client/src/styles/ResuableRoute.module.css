@@ -1,0 +1,11 @@
+.ResuableRoute_btn {
+  height: 2em;
+  width: 10em;
+  background-color: white;
+  font-weight: bold;
+  border: 2px solid white; /* You can change the border width (2px) to your desired size */
+  margin-top: 1em;
+  background-color: royalblue;
+  border-radius: 0.5em;
+
+}

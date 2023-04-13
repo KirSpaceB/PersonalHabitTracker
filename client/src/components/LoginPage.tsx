@@ -38,10 +38,14 @@ const LoginPage = () => {
 
             <h1 className={styles.LoginPage_title}>Habit Tracker</h1>
 
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} className={styles.LoginPage_form}>
+              <span className={styles.LoginPage_span_tags}>Username</span>
               <FormInput type="text" name="userName" value={loginInfo.userName} onChange={handleUserInput} placeholder='UserName' error={''}/>
+              <span className={styles.LoginPage_span_tags}>Password</span>
               <FormInput type="password" name="password" value={loginInfo.password} onChange={handleUserInput} placeholder='password' error={''}/>
-              <input type='submit'></input>
+              <input type='submit' value={'Login'} 
+              className={styles.LoginPage_input_tag}>
+              </input>
             </form>
             
             <ResuableRoute route='/SignUp'/>

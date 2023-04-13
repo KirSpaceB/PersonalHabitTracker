@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { RoutesTypeCheck } from '../utils/types'
-
+import styles from '../styles/ResuableRoute.module.css'
 const ResuableRoute:React.FC<RoutesTypeCheck> = ({route}) => {
   // Implement the Facade Pattern
   // Facade would be the entire library not just parts of the library. So in this case we would have to facade the Route, and Routes
@@ -16,7 +16,7 @@ const ResuableRoute:React.FC<RoutesTypeCheck> = ({route}) => {
 
   return (
     <div>
-        <button onClick={goToPage}>Sign Up</button>
+        <button className={styles.ResuableRoute_btn} onClick={goToPage}>Sign Up</button>
     </div>
   )
 }
