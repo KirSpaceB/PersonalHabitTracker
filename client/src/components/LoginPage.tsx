@@ -18,9 +18,13 @@ const LoginPage = () => {
     event.preventDefault()
     const response = await postUserLogin(loginInfo)
     // Now the Web Session Storage has a token
+    // We can make if(user id is in database then we can go)
+    // This doesn't work right now
     if(response != null) {
       navigationHook('/HabitTracker/Home')
     } else {
+      navigationHook('/');
+      alert('Wrong Username or Password')
       console.log('%c NO TOKEN RECIEVED CHECK HANDLESUBMIT OR API', 'color:red;')
     }
   }

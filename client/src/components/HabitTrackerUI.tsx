@@ -106,18 +106,22 @@ const HabitTrackerUI = () => {
 
   console.log('%c displayed habits useState variable','color: red;',displayHabits)
   return (
-    <>
-      <form className={styles.todo_form}>
+    <div className={styles.HabitTrackerUI_screen_container}>
+      <form>
         <input
           type="text"
           placeholder="Add a habit"
           value={(input)}
           onChange={(e) => setInput(e.target.value)}
           name="text"
-          className="todo_input"
+          className={styles.HabitTrackerUI_form_input_element}
         ></input>
-        <button type="button" onClick={handleSubmit} className={styles.todo_button}>
-          Add Habit
+        <button 
+        type="button" 
+        onClick={handleSubmit} 
+        className={styles.HabitTrackerUI_form_add_habit_btn}
+        >
+        Add Habit
         </button>
       </form>
 
@@ -153,7 +157,7 @@ const HabitTrackerUI = () => {
       ) : (
         <p>Something Went Wrong</p>
       )}
-    </>
+    </div>
   )
 }
 

@@ -1,3 +1,22 @@
-.todo_form {
-  
+.HabitTrackerUI_screen_container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  width: 100vw;
+  height: 100vh;
+}
+
+.HabitTrackerUI_form_input_element {
+  width: 20rem;
+  height: 2rem;
+  border-radius: 0.5rem;
+}
+
+.HabitTrackerUI_form_add_habit_btn {
+  width: 6rem;
+  height: 2.5rem;
+  border-radius: 0.5;
+  background-color: royalblue;
+  border-radius: 0.5rem;
 }
