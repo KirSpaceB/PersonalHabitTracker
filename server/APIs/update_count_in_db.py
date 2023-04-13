@@ -17,12 +17,9 @@ def update_count_endpoint():
   payloadFromPatchRequest = request.get_json();
   userID = payloadFromPatchRequest['payload']['user'];
   incrementedHabitCount = payloadFromPatchRequest['payload']['count'];
-  habitToIncrementCOunt = payloadFromPatchRequest['payload']['habit']
-  valuesPassedInInsertQuery = (incrementedHabitCount,userID, habitToIncrementCOunt)
+  habitToIncrementCount = payloadFromPatchRequest['payload']['habit'];
+  valuesPassedInInsertQuery = (incrementedHabitCount,userID, habitToIncrementCount)
 
-  # We meed to fix the issue where it replaces all habit_count
-  # One solution is we use another WHERE caluse
-  # We can match user_habit name :p
   updateCountQuery = 'UPDATE users_habits SET habit_count = %s WHERE user_id = %s AND user_habit = %s';
   DB.execute_insert_query(updateCountQuery,valuesPassedInInsertQuery)
   return jsonify({'message':'something went wrong with the for loop in update_count_endpoint'})

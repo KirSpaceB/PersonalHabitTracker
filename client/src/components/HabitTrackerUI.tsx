@@ -6,10 +6,18 @@ import { postSendUserHabits } from "../services/createUserHabits";
 import { getDecodedUserId } from "../services/decode_user_token/get";
 import { deleteUserHabitAPI } from "../services/delete_user_habit/delete";
 import { updateCountClientAPI } from "../services/updateCount/patch";
+import { incrementDisplayCount } from "../services/incrementDisplayCount/patch";
 type Todo = {
   text: string,
   count: number,
 }
+
+interface displayHabitsInterface {
+  habit_count:number,
+  user_habit:string
+}
+
+type IdisplayHabitArrayType = displayHabitsInterface[]
 
 const HabitTrackerUI = () => {
   const [input, setInput] = useState<string>('')
@@ -53,13 +61,14 @@ const HabitTrackerUI = () => {
     setHabits(updatedHabits);
   };
 
-  const handleDeleteUIHabit = (index) => {
+  const handleDeleteUIHabit = (index:number) => {
     const updatedHabits = [...displayHabits];
     updatedHabits.splice(index, 1)
     setDisplayHabits(updatedHabits)
   };
 
-  const handleDeleteFetchedHabit = async (habitToDelete) => {
+  const handleDeleteFetchedHabit = async (habitToDelete:displayHabitsInterface) => {
+    console.log("🚀 ~ file: HabitTrackerUI.tsx:70 ~ handleDeleteFetchedHabit ~ habitToDelete:", habitToDelete)
     const updatedHabits = displayHabits.filter(habit => habit !== habitToDelete);
     const userIdSentToDeleteUserHabitAPI = await getDecodedUserId();
     setDisplayHabits(updatedHabits)
@@ -74,16 +83,30 @@ const HabitTrackerUI = () => {
   };
 
   // 'GET' Request to render habits
-  const [displayHabits, setDisplayHabits] = useState([])
+  const [displayHabits, setDisplayHabits] = useState<IdisplayHabitArrayType>([]);
 
-    useEffect(() => {
-      // Gets userHabits from DB
-      const gettingUserHabit = async () => {
-        const awaitForGetRequest = await getUserHabits()
-        setDisplayHabits(awaitForGetRequest)
-      }
-      gettingUserHabit()
-    },[])
+  const handleIncrementFetchHabitCount = async (incrementedNumber:number) => {
+    const updatedHabits = [...displayHabits];
+    const incrementNumber = updatedHabits[incrementedNumber].habit_count++;
+    const decodedUserID = await getDecodedUserId();
+    const habitToSendForValidation = updatedHabits[incrementedNumber].user_habit;
+    
+    
+    // const habitToSendForValidation = incrementedNumber.user_habit;
+    // const incrementNumber = incrementedNumber.habit_count++;
+    // const decodedUserID = await getDecodedUserId()
+    setDisplayHabits(updatedHabits)
+    incrementDisplayCount(decodedUserID,habitToSendForValidation,incrementNumber)
+  };
+
+  useEffect(() => {
+    // Gets userHabits from DB
+    const gettingUserHabit = async () => {
+      const awaitForGetRequest = await getUserHabits()
+      setDisplayHabits(awaitForGetRequest)
+    }
+    gettingUserHabit()
+  },[]);
 
   console.log('%c displayed habits useState variable','color: red;',displayHabits)
   return (
@@ -119,7 +142,15 @@ const HabitTrackerUI = () => {
           {displayHabits.map((habit, index) => (
             <li key={index}>
               {habit.user_habit} {habit.habit_count}
-              <button onClick={() => handleDeleteFetchedHabit(habit)}>Delete</button>
+              <button
+              onClick={() => handleIncrementFetchHabitCount(index)}>
+              Increment
+              </button>
+
+              <button 
+              onClick={() => handleDeleteFetchedHabit(habit)}>
+              Delete
+              </button>
             </li>
           ))}
         </ul>
