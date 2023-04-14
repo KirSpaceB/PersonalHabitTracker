@@ -36,7 +36,7 @@ def authenticate_user():
                     {'user_id':user_id}, 'SECRET_KEY', algorithm='HS256'
                 )
                 return jsonify({'token':token})
-        return jsonify({'message':'POST request conditional was not hit'})
+        return jsonify({'message':'POST request conditional was not hit'}),500
     #Flask automatically gives cookie for each new session because they are two seperate requests it will lead to different(This was a bug still do not know why this was the case)
     #Gets user_habit depending on user_id
     if request.method == "GET":

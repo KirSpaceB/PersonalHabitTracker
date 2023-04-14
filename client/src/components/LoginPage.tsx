@@ -17,15 +17,13 @@ const LoginPage = () => {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     const response = await postUserLogin(loginInfo)
-    // Now the Web Session Storage has a token
-    // We can make if(user id is in database then we can go)
-    // This doesn't work right now
-    if(response != null) {
+    console.log("🚀 ~ file: LoginPage.tsx:20 ~ handleSubmit ~ response:", response)
+
+    if(response?.responseStatus !== 500) {
       navigationHook('/HabitTracker/Home')
     } else {
       navigationHook('/');
       alert('Wrong Username or Password')
-      console.log('%c NO TOKEN RECIEVED CHECK HANDLESUBMIT OR API', 'color:red;')
     }
   }
   //Review

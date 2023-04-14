@@ -155,7 +155,7 @@ const HabitTrackerUI = () => {
           ))}
         </ul>
       ) : (
-        <p>Something Went Wrong</p>
+        <p>Please Add a Habit</p>
       )}
     </div>
   )
