@@ -1,4 +1,12 @@
-export async function deleteUserHabitAPI(valuesSentToDeleteUserHabitBackend) {
+interface valuesSentToDeleteUserHabitBackend {
+  habitGoingToBeDelete: {
+    habit_count:number,
+    user_habit:string,
+  }
+  user_id:number
+}
+export async function deleteUserHabitAPI(valuesSentToDeleteUserHabitBackend:valuesSentToDeleteUserHabitBackend) {
+  console.log("🚀 ~ file: delete.ts:2 ~ deleteUserHabitAPI ~ valuesSentToDeleteUserHabitBackend:", valuesSentToDeleteUserHabitBackend)
   
   const valuesQueryString = encodeURIComponent(JSON.stringify(valuesSentToDeleteUserHabitBackend));
   const deleteUserHabitUrl = `http://127.0.0.1:5000/delete_user_habit?valuesSentToDeleteUserHabitBackend=${valuesQueryString}`

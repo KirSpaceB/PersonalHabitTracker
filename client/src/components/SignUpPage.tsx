@@ -76,22 +76,19 @@ const SignUpPage:React.FC = () => {
   const handleChange = (event:React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const {name, value} = event.target;
     setFormValues({...formValues, [name]: value});
-    console.log(name)
-    console.log(value)
   }
 
   return(
     <>
       <div className={styles.form_pageBody}>
 
-
         <div className={styles.form_container}>
           <form onSubmit={handleSubmit}>
 
-            <h3>Create Account</h3>
+            <h3 className={styles.SignUpPage_createaccount_tag}>Create Account</h3>
 
             <br />
-
+            <span className={styles.SignUpPage_createusername_container}>Create Username</span>
             <FormInput
             type={'text'}
             placeholder='UserName'
@@ -102,7 +99,7 @@ const SignUpPage:React.FC = () => {
             />
 
             <br/>
-
+            <span className={styles.SignUpPage_createusername_container}>Create Password</span>
             <FormInput
             type={'password'}
             placeholder='Password'
@@ -113,8 +110,9 @@ const SignUpPage:React.FC = () => {
             />
 
             <br/>
-
-            <input type='submit'></input>
+            <div className={styles.SignUpPage_submit_container}>
+              <input type='submit' className={styles.SignUpPage_submit_btn}></input>
+            </div>
           
           </form>
         </div>

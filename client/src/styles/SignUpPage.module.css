@@ -4,15 +4,37 @@
   display: grid;
   justify-content: center;
   align-items: center;
+  border: 1px solid black;
+  background-color: gray;
 }
 .form_container {
-  display: grid;
+  display: flex;
   justify-content: center;
   align-items: center;
   width: 30em;
   height: 30em;
-  background-color: rgb(245, 245, 245);
+  background-color: black;
   border: 1px solid black;
+}
+.SignUpPage_createaccount_tag {
+  font-size: 2rem;
+  color: royalblue;
+  text-align: center;
+}
+
+.SignUpPage_createusername_container {
+  color: white;
+}
+
+.SignUpPage_submit_btn {
+  width: 10rem;
+  height: 3rem;
+}
+
+.SignUpPage_submit_container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 .form > * {
   margin-top: 1em; 
