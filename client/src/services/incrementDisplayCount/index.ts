@@ -1,0 +1,1 @@
+export { incrementDisplayCount } from "./patch";
