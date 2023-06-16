@@ -81,42 +81,40 @@ const SignUpPage:React.FC = () => {
   return(
     <>
       <div className={styles.form_pageBody}>
-
         <div className={styles.form_container}>
-          <form onSubmit={handleSubmit}>
 
+          <form onSubmit={handleSubmit}>
             <h3 className={styles.SignUpPage_createaccount_tag}>Create Account</h3>
 
             <br />
             <span className={styles.SignUpPage_createusername_container}>Create Username</span>
             <FormInput
-            type={'text'}
-            placeholder='UserName'
-            name='userName'
-            value={formValues.userName}
-            onChange={handleChange}
-            error={formErrors.userName}
+              type={'text'}
+              placeholder='UserName'
+              name='userName'
+              value={formValues.userName}
+              onChange={handleChange}
+              error={formErrors.userName}
             />
 
             <br/>
             <span className={styles.SignUpPage_createusername_container}>Create Password</span>
             <FormInput
-            type={'password'}
-            placeholder='Password'
-            name='password'
-            value={formValues.password}
-            onChange={handleChange}
-            error={formErrors.password}
+              type={'password'}
+              placeholder='Password'
+              name='password'
+              value={formValues.password}
+              onChange={handleChange}
+              error={formErrors.password}
             />
 
             <br/>
             <div className={styles.SignUpPage_submit_container}>
               <input type='submit' className={styles.SignUpPage_submit_btn}></input>
             </div>
-          
           </form>
-        </div>
 
+        </div>
       </div>
     </>
   )
