@@ -1,4 +1,13 @@
+
+.form_input_container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 .FormInput_input {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   width: 15em;
   height: 2.2em;
   margin-bottom: 2em;

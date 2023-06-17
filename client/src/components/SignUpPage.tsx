@@ -75,48 +75,29 @@ const SignUpPage:React.FC = () => {
   
   const handleChange = (event:React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const {name, value} = event.target;
-    setFormValues({...formValues, [name]: value});
+  setFormValues({...formValues, [name]: value});
   }
 
-  return(
-    <>
-      <div className={styles.form_pageBody}>
-        <div className={styles.form_container}>
+  return (
+    <div className={styles.signup_container}>
+      <form className={styles.signup_form}>
+        <h2 className={styles.title}>Sign Up</h2>
 
-          <form onSubmit={handleSubmit}>
-            <h3 className={styles.SignUpPage_createaccount_tag}>Create Account</h3>
-
-            <br />
-            <span className={styles.SignUpPage_createusername_container}>Create Username</span>
-            <FormInput
-              type={'text'}
-              placeholder='UserName'
-              name='userName'
-              value={formValues.userName}
-              onChange={handleChange}
-              error={formErrors.userName}
-            />
-
-            <br/>
-            <span className={styles.SignUpPage_createusername_container}>Create Password</span>
-            <FormInput
-              type={'password'}
-              placeholder='Password'
-              name='password'
-              value={formValues.password}
-              onChange={handleChange}
-              error={formErrors.password}
-            />
-
-            <br/>
-            <div className={styles.SignUpPage_submit_container}>
-              <input type='submit' className={styles.SignUpPage_submit_btn}></input>
-            </div>
-          </form>
-
-        </div>
-      </div>
-    </>
+          <div className={styles.form_group}>
+              <label htmlFor="username">Username:</label>
+              <input type="text" id="username" className={styles.form_input} placeholder="Enter your username" />
+          </div>
+          <div className={styles.form_group}>
+              <label htmlFor="password">Password:</label>
+              <input type="password" id="password" className={styles.form_input} placeholder="Enter your password" />
+          </div>
+          <div className={styles.form_group}>
+              <label htmlFor="confirmPassword">Confirm Password:</label>
+              <input type="password" id="confirmPassword" className={styles.form_input} placeholder="Confirm your password" />
+          </div>
+          <button type="submit" className={styles.submit_btn}>Sign Up</button>
+      </form>
+    </div>
   )
 }
 

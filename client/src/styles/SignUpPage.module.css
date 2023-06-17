@@ -1,74 +1,56 @@
-.form_pageBody {
-  min-width: 100vw;
-  min-height: 100vh;
+.signup_container {
   display: flex;
-  align-items: center;
   justify-content: center;
-  background-color: #f0f0f0;
+  align-items: center;
+  height: 100vh;
+  background-color: #f8f8f8;
+  font-family: Arial, sans-serif;
 }
 
-.form_container {
-  width: 28em;
-  height: 34em;
-  border-radius: 10px;
-  background-color: #ffffff;
+.title {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.signup_form {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  width: 300px;
   padding: 30px;
-  box-shadow: 0px 10px 20px 0px rgba(0,0,0,0.1);
-  transition: box-shadow 0.3s ease;
+  border-radius: 10px;
+  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.15);
+  background-color: #fff;
 }
 
-.form_container:hover {
-  box-shadow: 0px 15px 30px 0px rgba(0,0,0,0.2);
-}
-
-.SignUpPage_createaccount_tag {
-  color: #333333;
-  font-size: 2em;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  margin-bottom: 1em;
-}
-
-.SignUpPage_createusername_container {
-  color: #333333;
-  margin-bottom: 20px;
-  font-size: 1.2em;
-  font-weight: bold;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  width: 100%;
-  text-align: left;
-}
-
-.SignUpPage_submit_btn {
-  color: #ffffff;
-  background-color: #333333;
-  cursor: pointer;
-  border-radius: 5px;
-  transition: background-color 0.3s ease;
-  width: 100%;
-  height: 2.5em;
-  border: none;
-  font-weight: 500;
-  margin-top: 30px;
-}
-
-.SignUpPage_submit_btn:hover {
-  background-color: #666666;
-}
-
-.SignUpPage_submit_container {
-  width: 100%;
+.form_group {
   display: flex;
-  justify-content: center;
-  align-items: center;
+  flex-direction: column;
+  margin-bottom: 15px;
 }
 
-.form > * {
-  margin-top: 1em; 
+.form_group label {
+  margin-bottom: 5px;
+  font-size: 14px;
+  color: #333;
+}
+
+.form_input {
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+}
+
+.submit_btn {
+  padding: 10px;
+  border-radius: 5px;
+  border: none;
+  background-color: #007bff;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.submit_btn:hover {
+  background-color: #0056b3;
 }
